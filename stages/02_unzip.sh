@@ -12,6 +12,7 @@ echo "Download path: $downloadpath"
 
 # Set list path
 listpath="$localpath/list"
+mkdir -p $listpath
 echo "List path: $listpath"
 
 # Create raw path
@@ -20,9 +21,5 @@ mkdir -p $rawpath
 echo "Raw path: $rawpath"
 
 # Unzip files in parallel
-cat $listpath/files.txt | tail -n +2 | xargs -P14 -n1 bash -c '
-  filename="${1%.*}"
-  echo '$downloadpath'/$1
-  echo '$rawpath'/$filename
-  unzip '$downloadpath'/$1 -d '$rawpath'/$filename
-' {}
+tar -xzvf $downloadpath/PubChemGHS.tar.gz -C $rawpath
+find $rawpath -type f -name '*.csv' -printf '%f\n' | sed "s/.csv//" | sort > $listpath/files.txt
